@@ -1,0 +1,87 @@
+# ============================================================
+#  RICHES — Shorts kesit otomasyonu ayarları
+#  Değiştirdikten sonra kaydet; bir sonraki çalıştırmada geçerli olur.
+# ============================================================
+
+# --- 1) KAYNAK KANALLAR -------------------------------------
+# Sistem bu kanalların son videolarını tarar. İstediğin kanalı ekle/çıkar.
+# "speaker" boşsa konuşmacı adını yapay zeka transkriptten/başlıktan bulur.
+channels:
+  - url: https://www.youtube.com/user/ecorner/videos
+    name: Stanford eCorner
+  - url: https://www.youtube.com/@tkppodcast/videos
+    name: The Knowledge Project
+  - url: https://www.youtube.com/channel/UCZ7x7yDBbEFCGztD8BYvRhA/videos
+    name: Greylock
+  - url: https://www.youtube.com/@stanfordgsb/videos
+    name: Stanford GSB
+
+# Elle eklemek istediğin videolar (opsiyonel). Buraya link koyarsan
+# bir sonraki çalıştırmada öncelikli işlenir, sonra listeden silinmez ama
+# tekrar işlenmez.
+extra_videos: []
+#  - https://www.youtube.com/watch?v=UF8uR6Z6KLc
+
+discovery:
+  scan_last_n_per_channel: 15      # her kanalın son kaç videosuna bakılsın
+  max_age_days: 365                # bundan eski videolar atlanır (0 = sınırsız)
+  min_duration_sec: 240           # 4 dk altı videolar atlanır (zaten kısa)
+  max_duration_sec: 10800         # 3 saatten uzunlar atlanır
+  videos_per_run: 5               # her çalıştırmada kaç kaynak video işlensin
+  clips_per_day: 10               # günde en fazla kaç kesit üretilsin
+  max_views: 500000              # bundan çok izlenmiş (herkesin kestiği) videolar atlanır
+  min_views: 2000
+
+# --- 2) KESİT SEÇİMİ (Claude API) ---------------------------
+selection:
+  model: claude-sonnet-5-5
+  clips_per_video: 3
+  min_clip_sec: 20
+  max_clip_sec: 58                # Shorts için 60 sn altı güvenli
+  min_score: 7                    # 1-10 arası viral potansiyel; altı elenir
+  # Kanalın tonu — yapay zeka anları buna göre seçer
+  channel_angle: >
+    Riches: money, business, success mindset, discipline, entrepreneurship,
+    hard-hitting life lessons from founders, CEOs, investors and TED speakers.
+    Prefer moments that are self-contained, start with a strong hook in the
+    first sentence, contain a surprising insight, a story with a payoff, or a
+    quotable line. Avoid moments that need prior context.
+
+# --- 3) VİDEO GÖRÜNÜMÜ ---------------------------------------
+render:
+  width: 1080
+  height: 1920
+  crf: 20
+  preset: veryfast
+  loudness_lufs: -14
+  accent_color: "#FFD23F"         # vurgulanan kelimenin rengi (altın sarısı)
+  cold_open: true                 # en çarpıcı cümleyle başla
+  hook_seconds: 2.5               # cold open yoksa büyük hook yazısının süresi
+  show_hook_title: true           # üstte büyük başlık
+  hook_title_seconds: 0           # 0 = video boyunca göster, örn 4 = ilk 4 sn
+  show_credit: true               # altta "Konuşmacı · Kaynak"
+  words_per_caption: 3
+  whisper_model: small.en         # tiny.en / base.en / small.en / medium.en
+
+# --- 4) YAYIN ------------------------------------------------
+upload:
+  # manual  = onayladığın kesit + başlık/açıklama "data/yayinla" klasörüne hazırlanır,
+  #           YouTube Studio'dan (veya telefondan) planlayarak yüklersin.
+  # youtube_api = otomatik yükleme + planlama. DİKKAT: Google, denetimden (audit)
+  #           geçmemiş API projelerinin yüklediği videoları "gizli"ye kilitliyor.
+  #           Audit onayı gelince bunu youtube_api yap. (KURULUM.md → 5)
+  mode: youtube_api
+  privacy_after_publish: public
+  timezone: Europe/Istanbul
+  publish_times: ["08:30", "10:00", "11:30", "13:00", "14:30", "16:00", "17:30", "19:00", "20:30", "22:00"]   # onaylanan kesitler bu saatlere sırayla planlanır
+  max_per_day: 10
+  category_id: "27"                   # 27 = Education, 22 = People & Blogs
+  default_tags: [shorts, motivation, business, success, mindset, entrepreneur, money]
+  description_template: |
+    {description}
+
+    🎤 {speaker}
+    📺 Full video: {source_url}
+    All rights belong to the original creator. Shared for educational and inspirational purposes.
+
+    #shorts #motivation #business #success #mindset

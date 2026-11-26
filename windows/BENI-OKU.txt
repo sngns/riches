@@ -1,0 +1,28 @@
+RICHES — Windows yedek kurulumu
+================================
+
+Bu klasör Mac'teki Riches sisteminin Windows yedeğidir. Kendi kendine ÇALIŞMAZ
+(otomatik 13:00 üretimi yok). Mac bozulursa ya da elinde değilse kullan.
+İki bilgisayarda aynı anda üretim/onay yapma: aynı kesitler iki kez yüklenir.
+
+KURULUM (bir kez)
+1. Bu "Riches" klasörünü istediğin yere koy (ör. Belgeler\Riches).
+2. Mac'teki Riches klasörünün içindeki "secrets" klasörünü buraya kopyala
+   (Riches.exe'nin yanına). İçinde API anahtarı ve YouTube bağlantıları var —
+   kimseyle paylaşma.
+3. Riches.exe'ye çift tıkla. Windows "bilinmeyen yayıncı" uyarısı verirse
+   "Ek bilgi" → "Yine de çalıştır" de.
+
+KULLANIM
+Riches.exe açılınca menü çıkar:
+  1) Paneli aç            → onay paneli tarayıcıda açılır (localhost:8642)
+  2) Şimdi kesit üret     → yeni kesitleri hazırlar (10-60 dk)
+  3) YouTube yükleme bağlantısı   (secrets kopyalamadıysan)
+  4) YouTube istatistik bağlantısı (secrets kopyalamadıysan)
+  5) API anahtarını değiştir
+  6) Durum
+
+İlk kesit üretiminde konuşma tanıma modeli (~500 MB) bir kez indirilir.
+
+Mac'e geri dönerken: Windows'ta onayladığın kesitler yüklendiyse sorun yok.
+Mac'te o videolar "yeni" görünebilir; panelde reddetmen yeterli.

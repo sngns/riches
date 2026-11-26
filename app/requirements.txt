@@ -1,0 +1,9 @@
+yt-dlp>=2025.10.0
+faster-whisper>=1.1.0
+opencv-python-headless>=4.9,<5
+anthropic>=0.40
+flask>=3.0
+pyyaml>=6.0
+google-api-python-client>=2.130
+google-auth-oauthlib>=1.2
+google-auth-httplib2>=0.2

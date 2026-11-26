@@ -1,0 +1,73 @@
+name: Windows build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["app/**", ".github/workflows/windows.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller
+
+      - name: Build Riches.exe
+        run: >
+          pyinstaller --noconfirm --onedir --console --name Riches riches.py
+          --add-data "riches/haarcascade_frontalface_default.xml;riches"
+          --add-data "riches/haarcascade_profileface.xml;riches"
+          --add-data "fonts;fonts"
+          --add-data "config.yaml;."
+          --collect-submodules riches
+          --collect-all faster_whisper --collect-all ctranslate2 --collect-all onnxruntime
+          --collect-all av --collect-all tokenizers --collect-all yt_dlp
+          --collect-data googleapiclient --collect-submodules googleapiclient
+          --collect-data certifi
+
+      - name: Add ffmpeg
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip" -OutFile ffmpeg.zip
+          Expand-Archive ffmpeg.zip -DestinationPath ffx
+          New-Item -ItemType Directory -Force -Path dist/Riches/bin | Out-Null
+          Copy-Item (Get-ChildItem -Recurse ffx -Filter ffmpeg.exe | Select-Object -First 1).FullName dist/Riches/bin/
+          Copy-Item (Get-ChildItem -Recurse ffx -Filter ffprobe.exe | Select-Object -First 1).FullName dist/Riches/bin/
+          Copy-Item ../windows/BENI-OKU.txt dist/Riches/
+
+      - name: Self test
+        working-directory: app/dist/Riches
+        run: .\Riches.exe selftest
+
+      - name: Zip
+        shell: pwsh
+        run: Compress-Archive -Path dist/Riches -DestinationPath ../Riches-Windows.zip -Force
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Riches-Windows
+          path: Riches-Windows.zip
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: windows-latest-build
+          name: Riches for Windows (latest)
+          body: "Riches.exe — Windows yedek kurulumu. BENI-OKU.txt dosyasına bak."
+          files: Riches-Windows.zip
+          make_latest: true
